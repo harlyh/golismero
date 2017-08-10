@@ -920,6 +920,7 @@ class AuditConfig (Configuration):
         "proxy_port": Configuration.integer,
         "proxy_user": Configuration.string,
         "proxy_pass": Configuration.string,
+	"proxy_socks_version": Configuration.string,
 
         # Cookie
         "cookie": Configuration.string,
@@ -1183,6 +1184,21 @@ class AuditConfig (Configuration):
                     "Invalid proxy port number: %d" % self._proxy_port)
         else:
             self._proxy_port = None
+
+    @property
+    def proxy_socks(self):
+	return self._proxy_socks_version or None  
+
+    @targets.setter
+    def proxy_socks(self, proxy_socks_version = 3 ):
+        # defaults to HTTP. Adding PROXY_TYPE_SOCKS4 just for compatibility
+                              #    0             1                   2
+        if proxy_socks_version in [ 3, 4, 5 ]:
+	    socksipy_vers = [ PROXY_TYPE_HTTP, PROXY_TYPE_SOCKS4, PROXY_TYPE_SOCKS5 ]
+	    self._proxy_socks_version = socks_vers[ proxy_socks_version - 3 ]
+        else: 
+	    raise ValueError (
+                    "Invalid SOCKS proxy version: %s" % self._proxy_socks_version )
 
 
     #--------------------------------------------------------------------------

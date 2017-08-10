@@ -101,10 +101,13 @@ def _run(options, *audits):
             try:
                 proxy_addr = auditParams.proxy_addr
                 if proxy_addr:
-                    proxy_port = auditParams.proxy_port
-                    if proxy_port:
-                        proxy_addr = "%s:%s" % (proxy_addr, proxy_port)
                     proxy_addr = "http://" + proxy_addr
+                    proxy_port = auditParams.proxy_port
+
+		    # in case of SOCKS proxy it's not appended to the URL
+                    if proxy_port and not proxy_socks_type:
+                        proxy_addr += ":" + str(proxy_port)
+
                     if auditParams.proxy_user:
                         if not check_auth(
                             proxy_addr,
